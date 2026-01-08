@@ -1,0 +1,51 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: 100m
+    max-file: 100
+
+networks:
+  docker-network:
+    driver: bridge
+
+services:
+  api:
+    container_name: concentration-api
+    restart: always
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      DB_HOST: postgres
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${DB_PORT}/${POSTGRES_DB}
+
+    build: .
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    volumes:
+      - /app/node_modules
+    networks:
+      - docker-network
+
+  db:
+    container_name: concentration-db
+    image: postgres:16-alpine
+    restart: always
+    networks:
+      - docker-network
+    volumes:
+      - db-data:/var/lib/postgresql/market-sync
+    ports:
+      - '${DB_PORT}:5432'
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+volumes:
+  db-data:
