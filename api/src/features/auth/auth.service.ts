@@ -27,7 +27,6 @@ export class AuthService {
   constructor(
     @Inject('ACCESS_JWT') private readonly accessTokenService: JwtService,
     @Inject('REFRESH_JWT') private readonly refreshTokenService: JwtService,
-    // private readonly refreshTokenRepository: RefreshTokenRepository,
     @Inject(DRIZZLE_MAIN) private readonly db: NodePgDatabase,
   ) {}
   public async test() {

@@ -1,26 +1,61 @@
-import { Injectable } from '@nestjs/common';
-import { CreateConcentrationDto } from './dto/create-concentration.dto';
-import { UpdateConcentrationDto } from './dto/update-concentration.dto';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
+import { ImageApiResponse } from './types/images-api.types';
+import { duplicateDeck, shuffleDeck, takeCards } from './utils/deck.utils';
+import { DRIZZLE_MAIN } from 'src/database/drizzle.constants';
+import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { gamesTable } from './schemas/game.schema';
+import { CurrentUser } from '../auth/strategies/jwt.strategy';
+import {
+  GameCardInsertModel,
+  gameCardsTable,
+} from './schemas/game-cards.schema';
 
 @Injectable()
 export class ConcentrationService {
-  create(createConcentrationDto: CreateConcentrationDto) {
-    return 'This action adds a new concentration';
-  }
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject(DRIZZLE_MAIN) private readonly db: NodePgDatabase,
+  ) {}
+  async generateNewDeck(totalCards: number, user: CurrentUser) {
+    const rest = totalCards % 2;
+    if (rest !== 0)
+      throw new BadRequestException('Quantity of cards must be even.');
 
-  findAll() {
-    return `This action returns all concentration`;
-  }
+    const pairs = totalCards / 2;
 
-  findOne(id: number) {
-    return `This action returns a #${id} concentration`;
-  }
+    const apiUrl = this.configService.getOrThrow<string>('IMAGES_API');
+    const cardsList = await axios
+      .get<ImageApiResponse[]>(apiUrl)
+      .then((res) => res.data);
 
-  update(id: number, updateConcentrationDto: UpdateConcentrationDto) {
-    return `This action updates a #${id} concentration`;
-  }
+    const selectedCards = takeCards(cardsList, pairs);
+    const fullDeck = duplicateDeck(selectedCards);
+    const finalDeck = shuffleDeck(fullDeck);
 
-  remove(id: number) {
-    return `This action removes a #${id} concentration`;
+    const result = await this.db.transaction(async (tx) => {
+      const [game] = await tx
+        .insert(gamesTable)
+        .values({
+          totalCards: totalCards,
+          userId: user.sub,
+        })
+        .returning();
+      const items: GameCardInsertModel[] = finalDeck.map((card, idx) => ({
+        gameId: game.id,
+        title: card.title,
+        imageId: card.uuid,
+        userId: user.sub,
+        position: idx,
+      }));
+      const gameCards = await tx
+        .insert(gameCardsTable)
+        .values(items)
+        .returning();
+
+      return { game, gameCards };
+    });
+    return result;
   }
 }

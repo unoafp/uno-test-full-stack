@@ -1,34 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { ConcentrationService } from './concentration.service';
-import { CreateConcentrationDto } from './dto/create-concentration.dto';
-import { UpdateConcentrationDto } from './dto/update-concentration.dto';
+import { IsAuthenticated } from '../auth/decorators/is-authenticated.decorator';
+import { GetCurrentUser } from '../auth/decorators/current-user.decorator';
+import { CurrentUser } from '../auth/strategies/jwt.strategy';
+import { CreateNewGameDto } from './dto/new-game.dto';
 
 @Controller('concentration')
+@IsAuthenticated()
 export class ConcentrationController {
   constructor(private readonly concentrationService: ConcentrationService) {}
 
-  @Post()
-  create(@Body() createConcentrationDto: CreateConcentrationDto) {
-    return this.concentrationService.create(createConcentrationDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.concentrationService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.concentrationService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateConcentrationDto: UpdateConcentrationDto) {
-    return this.concentrationService.update(+id, updateConcentrationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.concentrationService.remove(+id);
+  @Post('new')
+  create(
+    @Body() createConcentrationDto: CreateNewGameDto,
+    @GetCurrentUser() user: CurrentUser,
+  ) {
+    return this.concentrationService.generateNewDeck(
+      createConcentrationDto,
+      user,
+    );
   }
 }
