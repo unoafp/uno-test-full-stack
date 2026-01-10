@@ -13,7 +13,7 @@ interface CardData {
 export default function Home() {
   const [username, setUsername] = useState('');
   const [run, setRun] = useState('');
-  const [gameState, setGameState] = useState<'login' | 'playing' | 'finished'>('login');
+  const [gameState, setGameState] = useState<'login' | 'playing' | 'finished' | 'history'>('login');
 
   const [deck, setDeck] = useState<CardData[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
@@ -22,19 +22,22 @@ export default function Home() {
   const [moves, setMoves] = useState(0);
   const [userId, setUserId] = useState('');
   const [startTime, setStartTime] = useState(0);
+  const [history, setHistory] = useState<any[]>([]);
 
-  const startGame = async () => {
-    if (!username || !run) return alert('Please enter Name and RUN');
+  const startGameWithCreds = async (uname: string, urn: string) => {
     try {
       const res = await fetch('http://localhost:3001/game/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, run }),
+        body: JSON.stringify({ username: uname, run: urn }),
       });
       if (!res.ok) throw new Error('Failed to start game');
       const data = await res.json();
 
+      setUsername(uname);
+      setRun(urn);
       setUserId(data.user.id);
+      localStorage.setItem('memoryGameUser', JSON.stringify({ username: uname, run: urn, userId: data.user.id }));
       setDeck(data.deck);
       setGameState('playing');
       setMatchedIds(new Set());
@@ -45,6 +48,19 @@ export default function Home() {
       alert('Error starting game');
       console.error(err);
     }
+  };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('memoryGameUser');
+    if (storedUser) {
+      const { username: storedUsername, run: storedRun } = JSON.parse(storedUser);
+      startGameWithCreds(storedUsername, storedRun);
+    }
+  }, []);
+
+  const startGame = () => {
+    if (!username || !run) return alert('Please enter Name and RUN');
+    startGameWithCreds(username, run);
   };
 
   const handleCardClick = (index: number) => {
@@ -97,6 +113,28 @@ export default function Home() {
     }
   };
 
+  const viewHistory = async () => {
+    if (!run) return alert('No RUN available');
+    try {
+      const res = await fetch(`http://localhost:3001/game/history/${run}`);
+      if (!res.ok) throw new Error('Failed to fetch history');
+      const data = await res.json();
+      setHistory(data);
+      setGameState('history');
+    } catch (err) {
+      alert('Error fetching history');
+      console.error(err);
+    }
+  };
+
+  const changeUser = () => {
+    localStorage.removeItem('memoryGameUser');
+    setUsername('');
+    setRun('');
+    setUserId('');
+    setGameState('login');
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-100">
       <h1 className="text-4xl font-bold mb-8">Memory Game</h1>
@@ -145,11 +183,50 @@ export default function Home() {
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4 text-green-600">Congratulations {username}!</h2>
           <p>You completed the game in {moves} moves.</p>
+          <div className="mt-4 flex gap-4 justify-center">
+            <button
+              className="bg-blue-600 text-white p-2 rounded"
+              onClick={startGame}
+            >
+              Play Again
+            </button>
+            <button
+              className="bg-green-600 text-white p-2 rounded"
+              onClick={viewHistory}
+            >
+              View History
+            </button>
+            <button
+              className="bg-red-600 text-white p-2 rounded"
+              onClick={changeUser}
+            >
+              Change User
+            </button>
+          </div>
+        </div>
+      )}
+
+      {gameState === 'history' && (
+        <div className="text-center text-black">
+          <h2 className="text-2xl font-bold mb-4 text-black">Game History for RUN: {run}</h2>
+          <div className="mb-4 text-black">
+            {history.length === 0 ? (
+              <p className="text-black">No games played yet.</p>
+            ) : (
+              <ul className="list-disc list-inside text-black">
+                {history.map((game, index) => (
+                  <li key={index} className="text-black">
+                    Win: {game.win ? 'Yes' : 'No'}, Moves: {game.moves}, Time: {game.time}s, Date: {new Date(game.createdAt).toLocaleString()}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <button
-            className="mt-4 bg-blue-600 text-white p-2 rounded"
-            onClick={() => setGameState('login')}
+            className="bg-blue-600 text-white p-2 rounded"
+            onClick={() => setGameState('finished')}
           >
-            Play Again
+            Back
           </button>
         </div>
       )}

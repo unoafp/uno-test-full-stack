@@ -1,11 +1,16 @@
-FROM node:18-alpine AS builder
+FROM node:22-slim AS builder
+
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
 
-FROM node:18-alpine AS runner
+FROM node:22-slim AS runner
+
+USER root
+RUN apt-get update && apt-get install -y wget curl procps ca-certificates && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 COPY --from=builder /app/package.json .
 COPY --from=builder /app/next.config.ts ./

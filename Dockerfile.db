@@ -1,0 +1,7 @@
+FROM postgres:15
+
+# Actualizamos e instalamos wget (necesario para Antigravity/VS Code)
+RUN apt-get update && apt-get install -y \
+    wget curl \
+    ca-certificates procps \
+    && rm -rf /var/lib/apt/lists/*
