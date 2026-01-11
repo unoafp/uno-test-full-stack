@@ -1,5 +1,5 @@
 {
-  "id": "e43dc45f-6bf2-4720-96d7-4f8d3e9389f8",
+  "id": "0d1a56f5-bbea-449f-ba41-1a17ae266041",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -107,6 +107,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "current_game_id": {
+          "name": "current_game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false,
+          "default": null
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -116,7 +123,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_current_game_id_game_id_fk": {
+          "name": "users_current_game_id_game_id_fk",
+          "tableFrom": "users",
+          "tableTo": "game",
+          "columnsFrom": [
+            "current_game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_rut_body_unique": {
@@ -125,14 +146,187 @@
           "columns": [
             "rut_body"
           ]
+        },
+        "users_current_game_id_unique": {
+          "name": "users_current_game_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "current_game_id"
+          ]
         }
       },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.card": {
+      "name": "card",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "game_id": {
+          "name": "game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_id": {
+          "name": "image_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "card_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'hidden'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "card_game_id_game_id_fk": {
+          "name": "card_game_id_game_id_fk",
+          "tableFrom": "card",
+          "tableTo": "game",
+          "columnsFrom": [
+            "game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.game": {
+      "name": "game",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "total_cards": {
+          "name": "total_cards",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "moves": {
+          "name": "moves",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "errors": {
+          "name": "errors",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "status": {
+          "name": "status",
+          "type": "game_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "game_user_id_users_id_fk": {
+          "name": "game_user_id_users_id_fk",
+          "tableFrom": "game",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.card_status_enum": {
+      "name": "card_status_enum",
+      "schema": "public",
+      "values": [
+        "hidden",
+        "revealed",
+        "match"
+      ]
+    },
+    "public.game_status_enum": {
+      "name": "game_status_enum",
+      "schema": "public",
+      "values": [
+        "active",
+        "finished"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

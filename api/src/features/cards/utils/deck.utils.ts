@@ -1,4 +1,5 @@
 import { type ImageApiResponse } from '../types/images-api.types';
+import { CardModel } from '../schemas/card.schema';
 
 export function takeCards(
   array: ImageApiResponse[],
@@ -26,4 +27,13 @@ export function shuffleDeck<ImageApiResponse>(
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
+}
+
+export function toPublicCard(card: CardModel) {
+  return {
+    id: card.id,
+    status: card.status,
+    imageId: card.status !== 'hidden' ? card.imageId : null,
+    position: card.position,
+  };
 }
