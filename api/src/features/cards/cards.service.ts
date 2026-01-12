@@ -29,7 +29,7 @@ export class CardsService {
     const items: CardInsertModel[] = finalDeck.map((card, idx) => ({
       gameId: game.id,
       title: card.title,
-      imageId: card.uuid,
+      imageUrl: card.url,
       userId: game.userId,
       position: idx,
     }));

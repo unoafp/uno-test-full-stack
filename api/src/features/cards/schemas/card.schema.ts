@@ -21,11 +21,10 @@ export const cardSchema = pgTable('card', {
     .notNull()
     .references(() => gameSchema.id),
 
+  imageUrl: text().notNull(),
   title: text().notNull(),
-  imageId: uuid('image_id').notNull(),
   position: integer('position').notNull(),
   status: gameCardStatusEnum('status').notNull().default('hidden'),
-
   createdAt: timestamp('created_at').defaultNow(),
 });
 

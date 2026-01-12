@@ -11,23 +11,23 @@ describe('deck.utils', () => {
   describe('takeCards', () => {
     it('should return the first N cards', () => {
       const cards: ImageApiResponse[] = [
-        { uuid: '1', title: 'A' } as ImageApiResponse,
-        { uuid: '2', title: 'B' } as ImageApiResponse,
-        { uuid: '3', title: 'C' } as ImageApiResponse,
+        { title: 'A', url: '1' } as ImageApiResponse,
+        { title: 'B', url: '2' } as ImageApiResponse,
+        { title: 'C', url: '3' } as ImageApiResponse,
       ];
 
       const result = takeCards(cards, 2);
 
       expect(result).toHaveLength(2);
       expect(result).toEqual([
-        { uuid: '1', title: 'A' },
-        { uuid: '2', title: 'B' },
+        { url: '1', title: 'A' },
+        { url: '2', title: 'B' },
       ]);
     });
 
     it('should throw an error if N is greater than array length', () => {
       const cards: ImageApiResponse[] = [
-        { uuid: '1', title: 'A' } as ImageApiResponse,
+        { title: 'A', url: '1+A' } as ImageApiResponse,
       ];
 
       expect(() => takeCards(cards, 2)).toThrow(
@@ -108,11 +108,11 @@ describe('deck.utils', () => {
   });
 
   describe('toPublicCard', () => {
-    it('should hide imageId when status is hidden', () => {
+    it('should hide imageUrl when status is hidden', () => {
       const card = {
         id: '1',
         status: 'hidden',
-        imageId: 'img-123',
+        imageUrl: 'img-123',
         position: 0,
       } as CardModel;
 
@@ -121,16 +121,16 @@ describe('deck.utils', () => {
       expect(result).toEqual({
         id: '1',
         status: 'hidden',
-        imageId: null,
+        imageUrl: null,
         position: 0,
       });
     });
 
-    it('should show imageId when status is revealed or match', () => {
+    it('should show imageUrl when status is revealed or match', () => {
       const card = {
         id: '1',
         status: 'revealed',
-        imageId: 'img-123',
+        imageUrl: 'img-123',
         position: 0,
       } as CardModel;
 
@@ -139,7 +139,7 @@ describe('deck.utils', () => {
       expect(result).toEqual({
         id: '1',
         status: 'revealed',
-        imageId: 'img-123',
+        imageUrl: 'img-123',
         position: 0,
       });
     });

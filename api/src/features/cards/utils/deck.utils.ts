@@ -33,7 +33,7 @@ export function toPublicCard(card: CardModel) {
   return {
     id: card.id,
     status: card.status,
-    imageId: card.status !== 'hidden' ? card.imageId : null,
+    imageUrl: card.status !== 'hidden' ? card.imageUrl : null,
     position: card.position,
   };
 }
