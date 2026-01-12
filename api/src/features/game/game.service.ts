@@ -28,13 +28,13 @@ export class GameService {
         throw new BadRequestException('There is already an active game');
 
       const game = await this.gamesRepository.create(user.sub, totalCards, tx);
-      const cards = await this.cardsService.generateGameCards(
+      const rawCards = await this.cardsService.generateGameCards(
         game,
         totalCards,
         tx,
       );
 
-      return { game, cards };
+      return { game, cards: rawCards.map(toPublicCard) };
     });
 
     return result;
@@ -45,7 +45,7 @@ export class GameService {
       const game = await this.gamesRepository.findCurrentGame(user.sub, tx);
       if (!game) throw new BadRequestException('Not active game found');
 
-      const rawCards = await this.cardsService.getUnmatchedCards(game.id, tx);
+      const rawCards = await this.cardsService.getGameCards(game.id, tx);
       const cards = rawCards.map(toPublicCard);
       return { game, cards };
     });

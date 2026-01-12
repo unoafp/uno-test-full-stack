@@ -2,8 +2,10 @@ import { Controller, Get } from '@nestjs/common';
 import { StatsService } from './stats.service';
 import { GetCurrentUser } from '../auth/decorators/current-user.decorator';
 import { CurrentUser } from '../auth/strategies/jwt.strategy';
+import { IsAuthenticated } from '../auth/decorators/is-authenticated.decorator';
 
 @Controller('stats')
+@IsAuthenticated()
 export class StatsController {
   constructor(private readonly statsService: StatsService) {}
 

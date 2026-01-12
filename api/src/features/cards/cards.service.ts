@@ -41,6 +41,10 @@ export class CardsService {
   async getUnmatchedCards(gameId: string, tx: DrizzleTx) {
     return await this.cardsRepository.findUnmatchedCardsByGameId(gameId, tx);
   }
+
+  async getGameCards(gameId: string, tx: DrizzleTx) {
+    return await this.cardsRepository.findCardsByGameId(gameId, tx);
+  }
   async revealCard(cardId: string, tx: DrizzleTx) {
     const updatedCard = await this.cardsRepository.updateCardStatus(
       cardId,

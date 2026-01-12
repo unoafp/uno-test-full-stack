@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { and, eq, inArray, ne, or } from 'drizzle-orm';
+import { and, eq, inArray, ne } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DRIZZLE_MAIN } from 'src/database/drizzle.constants';
 import { DrizzleDbOrTx } from 'src/database/types';
@@ -26,6 +26,14 @@ export class CardsRepository {
       .where(
         and(eq(cardSchema.gameId, gameId), ne(cardSchema.status, 'match')),
       );
+  }
+
+  async findCardsByGameId(gameId: string, dbOrTx: DrizzleDbOrTx = this.db) {
+    return dbOrTx
+      .select()
+      .from(cardSchema)
+      .where(and(eq(cardSchema.gameId, gameId)))
+      .orderBy(cardSchema.position);
   }
 
   async updateCardStatus(
