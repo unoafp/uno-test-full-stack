@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { CardsRepository } from './respositories/cards.repository';
 import axios from 'axios';
 import * as deckUtils from './utils/deck.utils';
+import { ImageApiResponse } from './types/images-api.types';
 
 jest.mock('axios');
 
@@ -46,19 +47,20 @@ describe('CardsService', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
+
   it('should generate and insert shuffled cards', async () => {
     const game = { id: 'g1', userId: 'u1' } as any;
 
-    const apiCards = [
-      { uuid: '1', title: 'A' },
-      { uuid: '2', title: 'B' },
-      { uuid: '3', title: 'C' },
+    const apiCards: ImageApiResponse[] = [
+      { url: '1', title: 'A' },
+      { url: '2', title: 'B' },
+      { url: '3', title: 'C' },
     ];
 
     const selected = [{ uuid: '1', title: 'A' }];
-    const duplicated = [
-      { uuid: '1', title: 'A' },
-      { uuid: '1', title: 'A' },
+    const duplicated: ImageApiResponse[] = [
+      { url: '1', title: 'A' },
+      { url: '1', title: 'A' },
     ];
     const shuffled = [...duplicated];
 
@@ -86,14 +88,14 @@ describe('CardsService', () => {
         {
           gameId: 'g1',
           title: 'A',
-          imageId: '1',
+          imageUrl: '1',
           userId: 'u1',
           position: 0,
         },
         {
           gameId: 'g1',
           title: 'A',
-          imageId: '1',
+          imageUrl: '1',
           userId: 'u1',
           position: 1,
         },

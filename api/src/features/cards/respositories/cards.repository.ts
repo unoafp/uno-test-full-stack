@@ -12,6 +12,7 @@ import {
 @Injectable()
 export class CardsRepository {
   constructor(@Inject(DRIZZLE_MAIN) private readonly db: NodePgDatabase) {}
+
   async insertMany(items: CardInsertModel[], dbOrTx: DrizzleDbOrTx = this.db) {
     return dbOrTx.insert(cardSchema).values(items).returning();
   }

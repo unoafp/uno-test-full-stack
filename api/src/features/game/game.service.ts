@@ -80,7 +80,7 @@ export class GameService {
       }
       const revealedCard = revealedCards[0];
       const isSameImage =
-        revealedCard && pickedCard.imageId === revealedCard.imageId;
+        revealedCard && pickedCard.title === revealedCard.title;
 
       if (isSameImage === false) {
         return await this.resolveUnmach(game, pickedCard, tx);
