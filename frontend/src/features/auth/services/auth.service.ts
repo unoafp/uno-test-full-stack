@@ -102,16 +102,6 @@ class AuthService {
       name: payload.name,
     };
   }
-
-  async getGroups() {
-    return [];
-  }
-
-  async resetPassword(token: string, password: string) {
-    return guestClient
-      .post("password/reset", { token, password })
-      .then((res) => res.data);
-  }
 }
 
 const authService = new AuthService();
