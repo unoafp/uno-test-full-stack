@@ -1,5 +1,5 @@
 {
-  "id": "e8ad0737-5f93-4cb0-8221-552079455ca2",
+  "id": "e94761f8-be74-4705-828e-cfb82dd1abb4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -176,15 +176,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "title": {
-          "name": "title",
+        "imageUrl": {
+          "name": "imageUrl",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "image_id": {
-          "name": "image_id",
-          "type": "uuid",
+        "title": {
+          "name": "title",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },

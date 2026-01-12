@@ -34,6 +34,7 @@ export function toPublicCard(card: CardModel) {
     id: card.id,
     status: card.status,
     imageUrl: card.status !== 'hidden' ? card.imageUrl : null,
+    title: card.title,
     position: card.position,
   };
 }

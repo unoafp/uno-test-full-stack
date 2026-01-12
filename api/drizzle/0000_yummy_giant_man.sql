@@ -24,8 +24,8 @@ CREATE TABLE "users" (
 CREATE TABLE "card" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"game_id" uuid NOT NULL,
+	"imageUrl" text NOT NULL,
 	"title" text NOT NULL,
-	"image_id" uuid NOT NULL,
 	"position" integer NOT NULL,
 	"status" "card_status_enum" DEFAULT 'hidden' NOT NULL,
 	"created_at" timestamp DEFAULT now()
