@@ -1,5 +1,9 @@
-frontend/
-infraestructure/
-.github/
-.README.md
-.gitignore
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Env (global)
+.env
+.env.*
