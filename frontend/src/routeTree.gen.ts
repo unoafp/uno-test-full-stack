@@ -9,16 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as protectedRouteRouteImport } from './routes/(protected)/route'
 import { Route as guestRouteRouteImport } from './routes/(guest)/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as guestRegisterRouteImport } from './routes/(guest)/register'
 import { Route as guestLoginRouteImport } from './routes/(guest)/login'
+import { Route as protectedAppRouteRouteImport } from './routes/(protected)/app/route'
+import { Route as protectedAppIndexRouteImport } from './routes/(protected)/app/index'
+import { Route as protectedAppStatsIndexRouteImport } from './routes/(protected)/app/stats/index'
+import { Route as protectedAppGameIndexRouteImport } from './routes/(protected)/app/game/index'
+import { Route as protectedAppGameNewRouteImport } from './routes/(protected)/app/game/new'
 
-const AppRouteRoute = AppRouteRouteImport.update({
-  id: '/app',
-  path: '/app',
+const protectedRouteRoute = protectedRouteRouteImport.update({
+  id: '/(protected)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const guestRouteRoute = guestRouteRouteImport.update({
@@ -30,11 +33,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const guestRegisterRoute = guestRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -45,57 +43,111 @@ const guestLoginRoute = guestLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => guestRouteRoute,
 } as any)
+const protectedAppRouteRoute = protectedAppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
+const protectedAppIndexRoute = protectedAppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => protectedAppRouteRoute,
+} as any)
+const protectedAppStatsIndexRoute = protectedAppStatsIndexRouteImport.update({
+  id: '/stats/',
+  path: '/stats/',
+  getParentRoute: () => protectedAppRouteRoute,
+} as any)
+const protectedAppGameIndexRoute = protectedAppGameIndexRouteImport.update({
+  id: '/game/',
+  path: '/game/',
+  getParentRoute: () => protectedAppRouteRoute,
+} as any)
+const protectedAppGameNewRoute = protectedAppGameNewRouteImport.update({
+  id: '/game/new',
+  path: '/game/new',
+  getParentRoute: () => protectedAppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteRouteWithChildren
+  '/app': typeof protectedAppRouteRouteWithChildren
   '/login': typeof guestLoginRoute
   '/register': typeof guestRegisterRoute
-  '/app/': typeof AppIndexRoute
+  '/app/': typeof protectedAppIndexRoute
+  '/app/game/new': typeof protectedAppGameNewRoute
+  '/app/game': typeof protectedAppGameIndexRoute
+  '/app/stats': typeof protectedAppStatsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof guestLoginRoute
   '/register': typeof guestRegisterRoute
-  '/app': typeof AppIndexRoute
+  '/app': typeof protectedAppIndexRoute
+  '/app/game/new': typeof protectedAppGameNewRoute
+  '/app/game': typeof protectedAppGameIndexRoute
+  '/app/stats': typeof protectedAppStatsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(guest)': typeof guestRouteRouteWithChildren
-  '/app': typeof AppRouteRouteWithChildren
+  '/(protected)': typeof protectedRouteRouteWithChildren
+  '/(protected)/app': typeof protectedAppRouteRouteWithChildren
   '/(guest)/login': typeof guestLoginRoute
   '/(guest)/register': typeof guestRegisterRoute
-  '/app/': typeof AppIndexRoute
+  '/(protected)/app/': typeof protectedAppIndexRoute
+  '/(protected)/app/game/new': typeof protectedAppGameNewRoute
+  '/(protected)/app/game/': typeof protectedAppGameIndexRoute
+  '/(protected)/app/stats/': typeof protectedAppStatsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/login' | '/register' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/register'
+    | '/app/'
+    | '/app/game/new'
+    | '/app/game'
+    | '/app/stats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/app'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/app'
+    | '/app/game/new'
+    | '/app/game'
+    | '/app/stats'
   id:
     | '__root__'
     | '/'
     | '/(guest)'
-    | '/app'
+    | '/(protected)'
+    | '/(protected)/app'
     | '/(guest)/login'
     | '/(guest)/register'
-    | '/app/'
+    | '/(protected)/app/'
+    | '/(protected)/app/game/new'
+    | '/(protected)/app/game/'
+    | '/(protected)/app/stats/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   guestRouteRoute: typeof guestRouteRouteWithChildren
-  AppRouteRoute: typeof AppRouteRouteWithChildren
+  protectedRouteRoute: typeof protectedRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteRouteImport
+    '/(protected)': {
+      id: '/(protected)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof protectedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(guest)': {
@@ -112,13 +164,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/': {
-      id: '/app/'
-      path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/(guest)/register': {
       id: '/(guest)/register'
       path: '/register'
@@ -132,6 +177,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof guestLoginRouteImport
       parentRoute: typeof guestRouteRoute
+    }
+    '/(protected)/app': {
+      id: '/(protected)/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof protectedAppRouteRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/app/': {
+      id: '/(protected)/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof protectedAppIndexRouteImport
+      parentRoute: typeof protectedAppRouteRoute
+    }
+    '/(protected)/app/stats/': {
+      id: '/(protected)/app/stats/'
+      path: '/stats'
+      fullPath: '/app/stats'
+      preLoaderRoute: typeof protectedAppStatsIndexRouteImport
+      parentRoute: typeof protectedAppRouteRoute
+    }
+    '/(protected)/app/game/': {
+      id: '/(protected)/app/game/'
+      path: '/game'
+      fullPath: '/app/game'
+      preLoaderRoute: typeof protectedAppGameIndexRouteImport
+      parentRoute: typeof protectedAppRouteRoute
+    }
+    '/(protected)/app/game/new': {
+      id: '/(protected)/app/game/new'
+      path: '/game/new'
+      fullPath: '/app/game/new'
+      preLoaderRoute: typeof protectedAppGameNewRouteImport
+      parentRoute: typeof protectedAppRouteRoute
     }
   }
 }
@@ -150,22 +230,39 @@ const guestRouteRouteWithChildren = guestRouteRoute._addFileChildren(
   guestRouteRouteChildren,
 )
 
-interface AppRouteRouteChildren {
-  AppIndexRoute: typeof AppIndexRoute
+interface protectedAppRouteRouteChildren {
+  protectedAppIndexRoute: typeof protectedAppIndexRoute
+  protectedAppGameNewRoute: typeof protectedAppGameNewRoute
+  protectedAppGameIndexRoute: typeof protectedAppGameIndexRoute
+  protectedAppStatsIndexRoute: typeof protectedAppStatsIndexRoute
 }
 
-const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppIndexRoute: AppIndexRoute,
+const protectedAppRouteRouteChildren: protectedAppRouteRouteChildren = {
+  protectedAppIndexRoute: protectedAppIndexRoute,
+  protectedAppGameNewRoute: protectedAppGameNewRoute,
+  protectedAppGameIndexRoute: protectedAppGameIndexRoute,
+  protectedAppStatsIndexRoute: protectedAppStatsIndexRoute,
 }
 
-const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
-  AppRouteRouteChildren,
+const protectedAppRouteRouteWithChildren =
+  protectedAppRouteRoute._addFileChildren(protectedAppRouteRouteChildren)
+
+interface protectedRouteRouteChildren {
+  protectedAppRouteRoute: typeof protectedAppRouteRouteWithChildren
+}
+
+const protectedRouteRouteChildren: protectedRouteRouteChildren = {
+  protectedAppRouteRoute: protectedAppRouteRouteWithChildren,
+}
+
+const protectedRouteRouteWithChildren = protectedRouteRoute._addFileChildren(
+  protectedRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   guestRouteRoute: guestRouteRouteWithChildren,
-  AppRouteRoute: AppRouteRouteWithChildren,
+  protectedRouteRoute: protectedRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
