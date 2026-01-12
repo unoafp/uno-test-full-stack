@@ -8,5 +8,6 @@ import { CardsModule } from '../cards/cards.module';
   imports: [CardsModule],
   controllers: [GameController],
   providers: [GameService, GamesRepository],
+  exports: [GameService],
 })
 export class GameModule {}

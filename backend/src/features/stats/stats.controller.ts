@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { StatsService } from './stats.service';
 import { GetCurrentUser } from '../auth/decorators/current-user.decorator';
 import { CurrentUser } from '../auth/strategies/jwt.strategy';
@@ -12,5 +12,10 @@ export class StatsController {
   @Get('past-results')
   getPastResults(@GetCurrentUser() user: CurrentUser) {
     return this.statsService.getPastResults(user);
+  }
+
+  @Get(':id')
+  getGameResult(@Param('id') id: string, @GetCurrentUser() user: CurrentUser) {
+    return this.statsService.getGameResult(id, user);
   }
 }

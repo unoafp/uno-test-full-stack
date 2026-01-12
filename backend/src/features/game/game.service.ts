@@ -1,9 +1,13 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CurrentUser } from '../auth/strategies/jwt.strategy';
 import { DRIZZLE_MAIN } from 'src/database/drizzle.constants';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { CardsService } from '../cards/cards.service';
-import { ConfigService } from '@nestjs/config';
 import { GamesRepository } from './repositories/games.repository';
 import { CardModel } from '../cards/schemas/card.schema';
 import { toPublicCard } from '../cards/utils/deck.utils';
@@ -15,7 +19,6 @@ import { RevealCardDto } from './dto/pick-card.dto';
 @Injectable()
 export class GameService {
   constructor(
-    private readonly configService: ConfigService,
     private readonly cardsService: CardsService,
     @Inject(DRIZZLE_MAIN) private readonly db: NodePgDatabase,
     private readonly gamesRepository: GamesRepository,
@@ -159,5 +162,24 @@ export class GameService {
       cards: updatedCards,
       game: updatedGame,
     };
+  }
+
+  async getPastResults(user: CurrentUser) {
+    return this.gamesRepository.findFinishedGamesByUserId(user.sub);
+  }
+
+  async getGameResult(gameId: string, user: CurrentUser) {
+    this.db.transaction(async (tx) => {
+      const [game] = await this.gamesRepository.findFinishedGame(
+        user.sub,
+        gameId,
+      );
+      if (!game) throw new NotFoundException();
+      const rawCards = await this.cardsService.getGameCards(game.id, tx);
+      return {
+        game,
+        cards: rawCards,
+      };
+    });
   }
 }

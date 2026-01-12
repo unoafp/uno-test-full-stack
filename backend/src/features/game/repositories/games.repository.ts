@@ -86,6 +86,23 @@ export class GamesRepository {
       .limit(1);
     return result;
   }
+  async findFinishedGame(
+    userId: string,
+    gameId: string,
+    dbOrTx: DrizzleDbOrTx = this.db,
+  ) {
+    return await dbOrTx
+      .select()
+      .from(gameSchema)
+      .where(
+        and(
+          eq(gameSchema.id, gameId),
+          eq(gameSchema.userId, userId),
+          eq(gameSchema.status, 'finished'),
+        ),
+      )
+      .limit(1);
+  }
 
   async findFinishedGamesByUserId(
     userId: string,
