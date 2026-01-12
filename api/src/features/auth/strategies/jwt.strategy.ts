@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-export type CurrentUserType = {
+export type CurrentUser = {
   sub: string;
   name: string;
 };
@@ -16,12 +16,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       secretOrKey: configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
       jwtFromRequest: ExtractJwt.fromExtractors([
         ExtractJwt.fromAuthHeaderAsBearerToken(),
-        (req) => req?.query?.token || null, // SSE compatibility
+        (req) => req?.query?.token,
       ]),
     });
   }
 
-  async validate(payload: CurrentUserType) {
-    return payload; // esto va directo a request.user
+  async validate(payload: CurrentUser) {
+    return payload;
   }
 }

@@ -15,7 +15,7 @@ import { DRIZZLE_MAIN } from 'src/database/drizzle.constants';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { and, DrizzleQueryError, eq } from 'drizzle-orm';
 import { RegisterDto } from './dto/register.dto';
-import { UserModel, usersTable } from './schema/user.schema';
+import { UserModel, userSchema } from './schema/user.schema';
 import { refreshTokensTable } from './schema/resfresh-token.schema';
 import { parseTimeToFutureDate } from './utils/time-parser.utils';
 import { splitRut } from './utils/rut.utils';
@@ -27,11 +27,10 @@ export class AuthService {
   constructor(
     @Inject('ACCESS_JWT') private readonly accessTokenService: JwtService,
     @Inject('REFRESH_JWT') private readonly refreshTokenService: JwtService,
-    // private readonly refreshTokenRepository: RefreshTokenRepository,
     @Inject(DRIZZLE_MAIN) private readonly db: NodePgDatabase,
   ) {}
   public async test() {
-    const tables = await this.db.select().from(usersTable);
+    const tables = await this.db.select().from(userSchema);
 
     return tables;
   }
@@ -52,10 +51,10 @@ export class AuthService {
     const [stored] = await this.db
       .select({
         refreshToken: refreshTokensTable,
-        user: usersTable,
+        user: userSchema,
       })
       .from(refreshTokensTable)
-      .innerJoin(usersTable, eq(usersTable.id, refreshTokensTable.userId))
+      .innerJoin(userSchema, eq(userSchema.id, refreshTokensTable.userId))
       .where(eq(refreshTokensTable.userId, payload.sub))
       .limit(1);
 
@@ -79,9 +78,9 @@ export class AuthService {
     const [body, dv] = splitRut(rut);
     const [user] = await this.db
       .select()
-      .from(usersTable)
+      .from(userSchema)
       .where(
-        and(eq(usersTable.rutBody, Number(body)), eq(usersTable.rutDv, dv)),
+        and(eq(userSchema.rutBody, Number(body)), eq(userSchema.rutDv, dv)),
       )
       .limit(1);
 
@@ -131,11 +130,12 @@ export class AuthService {
 
   async registerUser(dto: RegisterDto) {
     const { name, rut } = dto;
+    console.log(dto);
     const [body, dv] = splitRut(rut);
     const result = await this.db
       .transaction(async (tx) => {
         const [user] = await tx
-          .insert(usersTable)
+          .insert(userSchema)
           .values({ name, rutBody: Number(body), rutDv: dv })
           .returning();
         return user;

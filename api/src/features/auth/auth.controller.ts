@@ -3,8 +3,8 @@ import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { IsAuthenticated } from './decorators/is-authenticated.decorator';
-import { CurrentUser } from './decorators/current-user.decorator';
-import { CurrentUserType } from './strategies/jwt.strategy';
+import { GetCurrentUser } from './decorators/current-user.decorator';
+import { CurrentUser } from './strategies/jwt.strategy';
 import { CookieOptions, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
@@ -74,16 +74,7 @@ export class AuthController {
   }
   @Get('test')
   @IsAuthenticated()
-  test(@CurrentUser() user: CurrentUserType) {
+  test(@GetCurrentUser() user: CurrentUser) {
     return user;
   }
-
-  // @Post('password/reset')
-  // resetPasswordFromToken(@Body() dto: ResetPasswordDto) {
-  //   return this.authService.resetPassword(dto);
-  // }
-  // @Post('password/forgot')
-  // forgotPassword(@Body() dto: ForgotPasswordDto) {
-  //   return this.authService.forgotPassword(dto.email);
-  // }
 }
