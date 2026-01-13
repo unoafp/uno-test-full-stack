@@ -9,7 +9,7 @@ export class CreateGameSessionDto {
     idUser: string;
 
     @IsDateString()
-    finishedAt: String;
+    finishedAt: string;
 
     @Transform(({ value }) => value?.toUpperCase())
     @IsEnum(GameResult, 

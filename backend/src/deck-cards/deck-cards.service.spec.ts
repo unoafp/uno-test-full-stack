@@ -13,17 +13,13 @@ describe('DeckCardsService', () => {
       id: 'card-1',
       imageUrl: 'http://image-1',
       title: 'Card 1',
-      contentType: 'image/jpeg',
-      codeDeck: null,
-      gameSession: [],
+      contentType: 'image/jpeg'
     },
     {
       id: 'card-2',
       imageUrl: 'http://image-2',
       title: 'Card 2',
-      contentType: 'image/jpeg',
-      codeDeck: null,
-      gameSession: [],
+      contentType: 'image/jpeg'
     },
   ];
 

@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GameSession } from './entities/game-session.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { GameResult } from './enums/game-results.enum';
 
 @Injectable()
 export class GameSessionService {
@@ -36,7 +37,7 @@ export class GameSessionService {
       });
 
       await this.gameSessionRepository.save(gameSession);
-      return "The registered game has been saved successfully";
+      return "the registered game has been saved successfully";
 
     } catch (error) {
       this.handleDbExceptions(error);
@@ -47,9 +48,7 @@ export class GameSessionService {
   async findByRut(rut: string): Promise<GameSession[]> {
     return this.gameSessionRepository.find({
       where: {
-        user: {
-          rut: rut,
-        },
+        user: {rut},
       },
       relations: ['user'],
     });

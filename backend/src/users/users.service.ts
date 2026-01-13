@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +24,19 @@ export class UsersService {
 
     } catch (error) {
       this.handleDbExceptions(error)
+    }
+  }
+  
+  async LoginUser(rut: string) {
+    const user = await this.userRepository.findOne({
+      where: {rut},
+    });
+
+    if(!user){
+      
+      throw new NotFoundException(`User with rut: ${rut} not exist`);
+    } else {
+      return user;
     }
   }
 

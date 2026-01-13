@@ -3,12 +3,19 @@ import { SeedCardsService } from './seed-cards.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Cards } from './entities/cards.entity';
 import { Repository } from 'typeorm';
+import { Logger } from '@nestjs/common';
 import { HttpAdapter } from 'src/common/interfaces/http-adapter.interface';
 
 describe('SeedCardsService', () => {
   let service: SeedCardsService;
   let cardsRepository: jest.Mocked<Repository<Cards>>;
   let httpAdapter: jest.Mocked<HttpAdapter>;
+
+  beforeAll(() => {
+    jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+    jest.spyOn(Logger.prototype, 'log').mockImplementation(() => {});
+    jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+  });
 
   const mockApiResponse = [
     {
@@ -34,7 +41,7 @@ describe('SeedCardsService', () => {
           },
         },
         {
-          provide: 'httpAdapter',
+          provide: 'HttpAdapter',
           useValue: {
             get: jest.fn(),
           },
@@ -44,7 +51,7 @@ describe('SeedCardsService', () => {
 
     service = module.get<SeedCardsService>(SeedCardsService);
     cardsRepository = module.get(getRepositoryToken(Cards));
-    httpAdapter = module.get('httpAdapter');
+    httpAdapter = module.get('HttpAdapter');
   });
 
   it('should be defined', () => {
@@ -52,7 +59,7 @@ describe('SeedCardsService', () => {
   });
 
   it('should fetch cards from API and upsert them into database', async () => {
-    httpAdapter.get.mockResolvedValue(mockApiResponse);
+    httpAdapter.get.mockResolvedValue(mockApiResponse as any);
     cardsRepository.upsert.mockResolvedValue(undefined as any);
 
     await service.execute();
