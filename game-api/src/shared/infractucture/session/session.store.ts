@@ -1,14 +1,19 @@
 export type SessionStore = {
-  create: (userId: string) => string;
-  getUser: (sessionId: string) => string | undefined;
+  create: (id: string, name: string, run: string) => string;
+  getUser: (
+    sessionId: string,
+  ) => { id: string; name: string; run: string } | undefined;
 };
 
 export class InmemSessionStore implements SessionStore {
-  private sessions = new Map<string, string>();
+  private sessions = new Map<
+    string,
+    { id: string; name: string; run: string }
+  >();
 
-  create(userId: string) {
+  create(userId: string, name: string, run: string) {
     const id = crypto.randomUUID();
-    this.sessions.set(id, userId);
+    this.sessions.set(id, { id: userId, name, run });
     return id;
   }
 

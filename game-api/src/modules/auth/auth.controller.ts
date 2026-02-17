@@ -35,7 +35,7 @@ export class AuthController {
   ) {
     const user = await this.identifier.execute(body);
 
-    const sessionId = this.sessionStore.create(user.id);
+    const sessionId = this.sessionStore.create(user.id, user.name, user.run);
 
     res.cookie('sessionId', sessionId, {
       httpOnly: true,

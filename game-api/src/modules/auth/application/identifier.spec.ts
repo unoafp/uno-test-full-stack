@@ -1,7 +1,7 @@
 import { UserRepository } from '../domain/repository';
 import { User } from '../domain/user';
 import { UserIdentifier } from './identifier';
-import { Command, Response } from './identifier.dto';
+import { Command } from './identifier.dto';
 
 describe('UserIdentifier', () => {
   let mockRepo: jest.Mocked<UserRepository>;

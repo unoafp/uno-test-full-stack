@@ -19,7 +19,9 @@ export class SessionAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const req = context
       .switchToHttp()
-      .getRequest<Request & { userId?: string }>();
+      .getRequest<
+        Request & { userId?: string; userName?: string; userRun?: string }
+      >();
     const cookies = req.cookies;
 
     const sessionId = cookies['sessionId'] as unknown;
@@ -28,10 +30,12 @@ export class SessionAuthGuard implements CanActivate {
 
     if (!sessionId) throw new UnauthorizedException();
 
-    const userId = this.sessionStore.getUser(sessionId);
-    if (!userId) throw new UnauthorizedException();
+    const user = this.sessionStore.getUser(sessionId);
+    if (!user) throw new UnauthorizedException();
 
-    req.userId = userId;
+    req.userId = user.id;
+    req.userName = user.name;
+    req.userRun = user.run;
     return true;
   }
 }
