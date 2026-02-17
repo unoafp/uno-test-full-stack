@@ -11,6 +11,7 @@ describe('UserIdentifier', () => {
     mockRepo = {
       FindByRun: jest.fn(),
       Save: jest.fn(),
+      Find: jest.fn(),
     };
   });
 

@@ -4,9 +4,19 @@ import { User } from '../../../domain/user';
 
 @Injectable()
 export class InMemoryUserRepository implements UserRepository {
+  private idToRun: Map<string, string> = new Map();
   private users: Map<string, User> = new Map();
 
-  FindByRun(id: string): Promise<User | null> {
+  FindByRun(run: string): Promise<User | null> {
+    const userId = this.idToRun.get(run);
+    if (!userId) {
+      return Promise.resolve(null);
+    }
+    const user = this.users.get(userId) || null;
+    return Promise.resolve(user);
+  }
+
+  Find(id: string): Promise<User | null> {
     const user = this.users.get(id) || null;
     return Promise.resolve(user);
   }
