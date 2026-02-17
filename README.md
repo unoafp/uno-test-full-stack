@@ -31,6 +31,15 @@ This project is a full stack application that allows users to play the UNO card 
     # open http://localhost:3000 in your browser to access the frontend application.
 ```
 
+#### Backend
+```bash
+    cd game-api
+    pnpm install
+    pnpm run start:dev
+    
+    # The backend server will start on http://localhost:3001
+```
+
 
 #### Running with Docker
 
@@ -38,4 +47,5 @@ This project is a full stack application that allows users to play the UNO card 
     docker compose up --build
     
     # open http://localhost:3000 in your browser to access the frontend application.
+    # open http://localhost:3001 in your browser to access the backend API.
 ```

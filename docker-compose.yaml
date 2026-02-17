@@ -6,3 +6,10 @@ services:
     image: game-web
     ports:
       - "3000:3000"
+  game-api:
+    build:
+      context: ./game-api
+      dockerfile: ./Dockerfile
+    image: game-api
+    ports:
+      - "3001:3001"
