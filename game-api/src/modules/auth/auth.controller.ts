@@ -2,7 +2,6 @@ import {
   Controller,
   Post,
   Body,
-  ConflictException,
   Res,
   Inject,
   Get,
@@ -12,7 +11,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { UserIdentifier } from './application/identifier';
-import { UserAlreadyExistsError, UserNotFoundError } from './domain/errors';
+import { UserNotFoundError } from './domain/errors';
 import type { SessionStore } from '../../shared/infractucture/session/session.store';
 import { SessionAuthGuard } from '../../shared/infractucture/session/session.guard';
 import { UserGetter } from './application/getter';
@@ -34,23 +33,16 @@ export class AuthController {
     @Body() body: { name: string; run: string },
     @Res({ passthrough: true }) res: Response,
   ) {
-    try {
-      const user = await this.identifier.execute(body);
+    const user = await this.identifier.execute(body);
 
-      const sessionId = this.sessionStore.create(user.id);
+    const sessionId = this.sessionStore.create(user.id);
 
-      res.cookie('sessionId', sessionId, {
-        httpOnly: true,
-        sameSite: 'lax',
-      });
+    res.cookie('sessionId', sessionId, {
+      httpOnly: true,
+      sameSite: 'lax',
+    });
 
-      return user;
-    } catch (error) {
-      if (error instanceof UserAlreadyExistsError) {
-        throw new ConflictException(error.message);
-      }
-      throw error;
-    }
+    return user;
   }
 
   @UseGuards(SessionAuthGuard)

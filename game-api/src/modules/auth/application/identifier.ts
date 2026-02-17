@@ -1,4 +1,3 @@
-import { UserAlreadyExistsError } from '../domain/errors';
 import { UserRepository } from '../domain/repository';
 import { User } from '../domain/user';
 import { Command, Response } from './identifier.dto';
@@ -10,7 +9,11 @@ class UserIdentifier {
     const existingUser = await this.repo.FindByRun(run);
 
     if (existingUser != null) {
-      throw new UserAlreadyExistsError();
+      return {
+        id: existingUser.getId(),
+        run: existingUser.getRun(),
+        name: existingUser.getName(),
+      };
     }
 
     const user = User.Create({ run, name });

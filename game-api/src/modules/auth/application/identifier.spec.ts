@@ -1,4 +1,3 @@
-import { UserAlreadyExistsError } from '../domain/errors';
 import { UserRepository } from '../domain/repository';
 import { User } from '../domain/user';
 import { UserIdentifier } from './identifier';
@@ -33,7 +32,7 @@ describe('UserIdentifier', () => {
     expect(response.id).toBeDefined();
   });
 
-  it('should throw an error if run already exists', async () => {
+  it('should return already exists', async () => {
     const existingUser: User = new User('1', '12345678-9', 'Existing User');
 
     mockRepo.FindByRun.mockResolvedValue(existingUser);
@@ -41,10 +40,14 @@ describe('UserIdentifier', () => {
     const identifier = new UserIdentifier(mockRepo);
     const command: Command = { run: '12345678-9', name: 'John Doe' };
 
-    await expect(identifier.execute(command)).rejects.toThrow(
-      UserAlreadyExistsError,
-    );
+    const response = await identifier.execute(command);
+
     expect(mockRepo.FindByRun).toHaveBeenCalledWith(command.run);
     expect(mockRepo.Save).not.toHaveBeenCalled();
+    expect(response).toMatchObject({
+      run: '12345678-9',
+      name: 'Existing User',
+    });
+    expect(response.id).toBeDefined();
   });
 });

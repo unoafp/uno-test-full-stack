@@ -23,6 +23,7 @@ export class InMemoryUserRepository implements UserRepository {
 
   Save(user: User): Promise<void> {
     this.users.set(user.getId(), user);
+    this.idToRun.set(user.getRun(), user.getId());
     return Promise.resolve();
   }
 }

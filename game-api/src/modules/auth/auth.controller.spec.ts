@@ -81,17 +81,36 @@ describe('AuthController', () => {
       });
     });
 
-    it('should throw a ConflictException if user already exists', async () => {
+    it('should return user  if user already exists', async () => {
       const user = new User('1', '12345678-9', 'Existing User');
       userRepositoryMock.FindByRun.mockResolvedValue(user);
+      storeMock.create.mockReturnValue('mock-session-id');
 
-      const body = { name: 'John Doe', run: '12345678-9' };
+      const body = { name: 'Existing User', run: '12345678-9' };
 
-      const response: Response = {} as unknown as Response;
+      const response: Response = {
+        cookie: jest.fn(),
+      } as unknown as Response;
 
-      await expect(controller.identify(body, response)).rejects.toThrow(
-        'User already exists',
+      const result = await controller.identify(body, response);
+
+      expect(userRepositoryMock.FindByRun).toHaveBeenCalledWith(body.run);
+      expect(userRepositoryMock.Save).not.toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(response.cookie).toHaveBeenCalledWith(
+        'sessionId',
+        'mock-session-id',
+        {
+          httpOnly: true,
+          sameSite: 'lax',
+        },
       );
+      expect(storeMock.create).toHaveBeenCalled();
+
+      expect(result).toMatchObject({
+        name: 'Existing User',
+        run: '12345678-9',
+      });
     });
   });
 
