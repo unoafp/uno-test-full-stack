@@ -1,0 +1,1 @@
+export const CARD_CONTENT_PROVIDER = Symbol('CARD_CONTENT_PROVIDER');
