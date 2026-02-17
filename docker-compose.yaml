@@ -1,0 +1,8 @@
+services:
+  game-web:
+    build:
+      context: ./game-web
+      dockerfile: ./Dockerfile
+    image: game-web
+    ports:
+      - "3000:3000"
