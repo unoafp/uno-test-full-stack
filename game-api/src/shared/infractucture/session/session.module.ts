@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { SESSION_STORE } from './session.token';
-import { SessionStore } from './session.store';
+import { InmemSessionStore } from './session.store';
 import { SessionAuthGuard } from './session.guard';
 
 @Module({
   providers: [
     {
       provide: SESSION_STORE,
-      useClass: SessionStore,
+      useClass: InmemSessionStore,
     },
     SessionAuthGuard,
   ],

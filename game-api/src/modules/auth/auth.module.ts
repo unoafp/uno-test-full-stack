@@ -4,8 +4,11 @@ import { InMemoryUserRepository } from './infrastructure/persistence/inmem/user-
 import { UserIdentifier } from './application/identifier';
 import { UserRepository } from './domain/repository';
 import { AuthController } from './auth.controller';
+import { SessionModule } from 'src/shared/infractucture/session/session.module';
+import { UserGetter } from './application/getter';
 
 @Module({
+  imports: [SessionModule],
   providers: [
     InMemoryUserRepository,
     {
@@ -15,6 +18,11 @@ import { AuthController } from './auth.controller';
     {
       provide: UserIdentifier,
       useFactory: (repo: UserRepository) => new UserIdentifier(repo),
+      inject: [USER_REPOSITORY],
+    },
+    {
+      provide: UserGetter,
+      useFactory: (repo: UserRepository) => new UserGetter(repo),
       inject: [USER_REPOSITORY],
     },
   ],

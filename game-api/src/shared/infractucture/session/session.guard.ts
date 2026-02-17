@@ -5,7 +5,7 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SessionStore } from './session.store';
+import type { SessionStore } from './session.store';
 import { SESSION_STORE } from './session.token';
 import { Request } from 'express';
 

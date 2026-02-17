@@ -8,8 +8,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const port = process.env.PORT ?? 3001;
-  console.log(`Starting server on port ${port}...`);
   app.use(cookieParser());
   await app.listen(port);
+
+  console.log(`Starting server on port ${port}...`);
 }
 bootstrap();

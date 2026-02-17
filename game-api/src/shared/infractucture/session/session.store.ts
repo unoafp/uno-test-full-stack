@@ -1,4 +1,9 @@
-export class SessionStore {
+export type SessionStore = {
+  create: (userId: string) => string;
+  getUser: (sessionId: string) => string | undefined;
+};
+
+export class InmemSessionStore implements SessionStore {
   private sessions = new Map<string, string>();
 
   create(userId: string) {

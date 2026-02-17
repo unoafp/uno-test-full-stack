@@ -1,22 +1,74 @@
-import { Controller, Post, Body, ConflictException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ConflictException,
+  Res,
+  Inject,
+  Get,
+  UseGuards,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
+import type { Response } from 'express';
 import { UserIdentifier } from './application/identifier';
-import { UserAlreadyExistsError } from './domain/errors';
+import { UserAlreadyExistsError, UserNotFoundError } from './domain/errors';
+import type { SessionStore } from '../../shared/infractucture/session/session.store';
+import { SessionAuthGuard } from '../../shared/infractucture/session/session.guard';
+import { UserGetter } from './application/getter';
+import { SESSION_STORE } from '../../shared/infractucture/session/session.token';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly identifier: UserIdentifier) {}
+  constructor(
+    private readonly identifier: UserIdentifier,
+    private readonly getter: UserGetter,
+
+    @Inject(SESSION_STORE)
+    private readonly sessionStore: SessionStore,
+  ) {}
 
   @Post('identify')
   async identify(
     // TODO : validate body with class-validator
     @Body() body: { name: string; run: string },
+    @Res({ passthrough: true }) res: Response,
   ) {
     try {
       const user = await this.identifier.execute(body);
+
+      const sessionId = this.sessionStore.create(user.id);
+
+      res.cookie('sessionId', sessionId, {
+        httpOnly: true,
+        sameSite: 'lax',
+      });
+
       return user;
     } catch (error) {
       if (error instanceof UserAlreadyExistsError) {
         throw new ConflictException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  @UseGuards(SessionAuthGuard)
+  @Get('me')
+  async me(@Req() req: Request & { userId?: string }) {
+    const userId = req.userId;
+
+    if (userId == null) {
+      throw new UnauthorizedException();
+    }
+
+    try {
+      const user = await this.getter.execute({ id: userId });
+
+      return user;
+    } catch (error) {
+      if (error instanceof UserNotFoundError) {
+        throw new UnauthorizedException();
       }
       throw error;
     }
