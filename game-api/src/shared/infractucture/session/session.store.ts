@@ -3,6 +3,7 @@ export type SessionStore = {
   getUser: (
     sessionId: string,
   ) => { id: string; name: string; run: string } | undefined;
+  delete: (id: string) => void;
 };
 
 export class InmemSessionStore implements SessionStore {
@@ -19,5 +20,9 @@ export class InmemSessionStore implements SessionStore {
 
   getUser(sessionId: string) {
     return this.sessions.get(sessionId);
+  }
+
+  delete(sessionId: string) {
+    return this.sessions.delete(sessionId);
   }
 }

@@ -9,7 +9,7 @@ import {
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { UserIdentifier } from './application/identifier';
 import { UserNotFoundError } from './domain/errors';
 import type { SessionStore } from '../../shared/infractucture/session/session.store';
@@ -64,5 +64,20 @@ export class AuthController {
       }
       throw error;
     }
+  }
+
+  @Post('logout')
+  logout(@Req() req: Request, @Res() res: Response) {
+    const cookies = req.cookies;
+
+    const sessionId = cookies['sessionId'] as string;
+
+    if (sessionId) {
+      this.sessionStore.delete(sessionId);
+    }
+
+    res.clearCookie('sessionId');
+
+    return res.json({ message: 'Logged out' });
   }
 }
