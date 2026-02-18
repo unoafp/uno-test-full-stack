@@ -9,17 +9,22 @@ import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Card } from "@/shared/components/ui/Card";
 import { useLogin } from "../hooks/useLogin";
+import { useRouter } from "next/navigation";
+import { RutInput } from "@/shared/components/RutInput";
 
 export const PlayerForm = () => {
   const [name, setName] = useState("");
-  const [nickname, setNickname] = useState("");
+  const [rut, setRut] = useState("");
 
-  const { mutate, isPending } = useLogin();
+  const router = useRouter();
+
+  const { mutateAsync, isPending } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !nickname.trim()) return;
-    mutate({ name: name.trim(), run: nickname.trim() });
+    if (!name.trim() || !rut.trim()) return;
+    await mutateAsync({ name: name.trim(), run: rut.trim() });
+    router.push("/play");
   };
 
   return (
@@ -45,12 +50,12 @@ export const PlayerForm = () => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="nickname">Nickname</Label>
-            <Input
-              id="nickname"
-              placeholder="Your game nickname"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+            <Label htmlFor="rut">Nickname</Label>
+            <RutInput
+              id="rut"
+              placeholder="12.345.678-9"
+              value={rut}
+              onChange={(e) => setRut(e.target.value)}
               required
             />
           </div>
