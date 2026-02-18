@@ -3,7 +3,7 @@ import { CardContentProvider } from './card-content-provider';
 
 export class GameGenerator {
   private MAX_ATTEMPTS = 10;
-  private MAX_PAIRS = 10;
+  private MAX_PAIRS = 4;
 
   constructor(private readonly provider: CardContentProvider) {}
 
